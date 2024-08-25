@@ -1,82 +1,71 @@
-body, html {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    /* overflow-x: hidden; */
+body {
     display: flex;
     justify-content: center;
-    align-items: flex-start; 
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
     background-color: #f8f9fa;
 }
 
-.card-container {
-    max-width: 100%;
+.user-card {
     display: flex;
-    gap: 20px;
-}
-
-
-.card {
-    padding: 10px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
     background-color: #fff;
     border-radius: 8px;
-    width: 400px; 
-    height: 100px;
-    position: flex;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
 }
 
-.card img {
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.user-img {
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
-    width: 70px;
-    height: 70px;
-    object-fit: cover;
-    margin-right: 20px;
-    align-self: baseline
+    margin-right: 15px;
 }
 
-.card-content {
+.user-details {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    flex: 1;
 }
 
-.card-content h2 {
-    margin: -50px 80px;
-    font-size: 18px;
-    color: #050101;
+.user-name {
+    margin: 0;
+    font-size: 1.25rem;
 }
 
-.card-content p {
-    margin: 50px 80px;
-    color: #777;
-    font-size: 15px;
+.user-email {
+    margin: 0;
+    color: #6c757d;
 }
 
-.card-actions {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+.user-actions {
     display: flex;
-    flex-direction: column;
-    gap: 5px;
+    flex-direction: row;
+    gap: 10px;
 }
 
-.card-actions a {
-    padding: 2px 5px;
-    border: none;
-    cursor: pointer;
+.user-actions button {
+    min-width: 80px;
 }
 
-.card-actions .btn-primary {
-    background-color: #dbdee3;
-    color: #0061c3;
-    border-radius: 10px;
-}
+@media (max-width: 768px) {
+    .user-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-.card-actions .btn-secondary {
-    background-color: #dbdee3;
-    color: #0061c3;
-    border-radius: 10px;
+    .user-actions {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 15px;
+    }
 }
