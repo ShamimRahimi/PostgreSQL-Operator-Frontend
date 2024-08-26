@@ -42,7 +42,7 @@ body {
     font-size: 1.25rem;
 }
 
-.user-email {
+.app-size {
     margin: 0;
     color: #6c757d;
 }
@@ -51,6 +51,7 @@ body {
     display: flex;
     flex-direction: row;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .user-actions button {
