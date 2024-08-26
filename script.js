@@ -1,4 +1,6 @@
 let list = document.getElementById("list")
+let searchInput = document.getElementById("search");
+
 
 const axiosInstance = axios.create({
     baseURL: 'http://localhost:8000/api/v1', 
@@ -24,16 +26,7 @@ function handleDelete(appId) {
 }
 
 function handleResize(appId) {
-    // Implement resize logic here
-    // console.log('Resize functionality for app ID:', appId);
-    // // For example, you could send a PATCH request to resize the app
-    // axiosInstance.patch(`/apps/${appId}/`, { /* resize data */ })
-    // .then(response => {
-    //     console.log('Resize successful:', response.data);
-    // })
-    // .catch(error => {
-    //     console.error('Error resizing:', error);
-    // });
+
 }
 
 function createCard(app) {
@@ -101,18 +94,56 @@ function createCard(app) {
     return colDiv;
 }
 
-axiosInstance.get('/apps/')
-    .then(response => {
-        var results = response.data.results
-        console.log('Data:',results);
-        results.forEach(app => {
-            let card = createCard(app);
-            list.appendChild(card);
+fetchApps()
+
+
+searchInput.addEventListener('input', function() {
+    let query = searchInput.value;
+    if (query) {
+        filterApps(query);
+    } else {
+        fetchApps();
+    }
+});
+
+function fetchApps() {
+    axiosInstance.get('/apps/')
+        .then(response => {
+            var results = response.data.results;
+            console.log('Data:', results);
+            displayApps(results);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Error fetching the list.');
         });
-    })
-    .catch(error => {
-        console.error('Error:', error);
+}
+
+function displayApps(apps) {
+    list.innerHTML = ''; 
+    apps.forEach(app => {
+        let card = createCard(app);
+        list.appendChild(card);
     });
+}
 
+function filterApps(query) {
+    axiosInstance.get('/apps/')
+        .then(response => {
+            var results = response.data.results;
+            console.log('Data:', results);
+            let filteredApps = results.filter(app =>
+                app.name.toLowerCase().includes(query.toLowerCase())
+            );
+            displayApps(filteredApps);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
 
-    
+function showToast(message) {
+    const toast = new bootstrap.Toast(document.getElementById('error-toast'));
+    // document.querySelector('#error-toast .toast-body').textContent = message;
+    toast.show();
+}
