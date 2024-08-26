@@ -8,21 +8,23 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     function (config) {
-        const token = '9735ed51-c1a6-4a2e-bf73-911e95fe3a8d';
+        const token = 'de9f1088-6a04-4ecb-987c-71501ab5c6e6';
         config.headers.Authorization = `${token}`;
         return config;
     }
 );
 
 function handleDelete(appId) {
-    axiosInstance.delete(`/app/${appId}/`)
-        .then(response => {
-            console.log('Delete successful:', response.data);
-            // document.querySelector(`[data-id="${appId}"]`).remove();
-        })
-        .catch(error => {
-            console.error('Error deleting:', error);
-        });
+    if (confirm('Are you sure you want to delete this item?')) {
+        axiosInstance.delete(`/app/${appId}/`)
+            .then(response => {
+                console.log('Delete successful:', response.data);
+            })
+            .catch(error => {
+                console.error('Error deleting:', error);
+                showToast('Error deleting the item.');
+            });
+    }
 }
 
 function handleResize(appId) {
