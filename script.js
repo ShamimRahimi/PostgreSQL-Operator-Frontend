@@ -19,6 +19,10 @@ function handleDelete(appId) {
         axiosInstance.delete(`/app/${appId}/`)
             .then(response => {
                 console.log('Delete successful:', response.data);
+                const cardToRemove = document.querySelector(`[data-id="${appId}"]`);
+                if (cardToRemove) {
+                    cardToRemove.remove();
+                }
                 showToast('App deleted successfully.', 'success');
             })
             .catch(error => {
@@ -37,9 +41,36 @@ document.getElementById('addAppButton').addEventListener('click', function () {
     addAppModal.show();
 });
 
+document.getElementById('saveAppButton').addEventListener('click', function () {
+    const appName = document.getElementById('appName').value;
+    const appSize = parseInt(document.getElementById('appSize').value, 10);
+
+    if (appName && appSize) {
+        axiosInstance.post('/app/', { name: appName, size: appSize })
+            .then(response => {
+                const newApp = response.data;
+                console.log(newApp)
+                const card = createCard(newApp);
+                list.appendChild(card);
+                showToast('App created successfully!', 'success');
+
+                const addAppModal = bootstrap.Modal.getInstance(document.getElementById('addAppModal'));
+                addAppModal.hide();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Failed to create app.', 'error');
+            });
+    } else {
+        showToast('Please fill in all fields.', 'error');
+    }
+});
+
+
 function createCard(app) {
     let colDiv = document.createElement('div');
     colDiv.classList.add('col-12', 'col-md-3', 'mb-4');
+    colDiv.setAttribute('data-id', app.id);
 
     let userCardDiv = document.createElement('div');
     userCardDiv.classList.add('user-card');
@@ -56,7 +87,7 @@ function createCard(app) {
     userNameH4.textContent = app.name;  
 
     let idP = document.createElement('p');
-    idP.classList.add('app-size');
+    idP.classList.add('app-id');
     idP.textContent = 'id: ' + app.id;
 
     let appSizeP = document.createElement('p');
@@ -180,4 +211,3 @@ function showToast(message, type) {
     const toast = new bootstrap.Toast(toastElement);
     toast.show();
 }
-
