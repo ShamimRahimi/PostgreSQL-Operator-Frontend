@@ -61,8 +61,27 @@ body {
     flex-wrap: wrap;
 }
 
-.user-actions button {
-    min-width: 80px;
+.btn-circle {
+    width: 60px;
+    height: 60px;
+    padding: 0;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 35px;
+}
+
+.custom-header-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.custom-header-error {
+    background-color: #dc3545;
+    color: white;
+}
+
+.custom-toast-close {
+    color: white;
 }
 
 @media (max-width: 768px) {

@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     function (config) {
-        const token = 'de9f1088-6a04-4ecb-987c-71501ab5c6e6';
+        const token = '4a956a0b-5420-4d02-8a25-fcb0284db220';
         config.headers.Authorization = `${token}`;
         return config;
     }
@@ -19,10 +19,11 @@ function handleDelete(appId) {
         axiosInstance.delete(`/app/${appId}/`)
             .then(response => {
                 console.log('Delete successful:', response.data);
+                showToast('App deleted successfully.', 'success');
             })
             .catch(error => {
                 console.error('Error deleting:', error);
-                showToast('Error deleting the item.');
+                showToast('Error deleting the item.', 'error');
             });
     }
 }
@@ -30,6 +31,11 @@ function handleDelete(appId) {
 function handleResize(appId) {
 
 }
+
+document.getElementById('addAppButton').addEventListener('click', function () {
+    const addAppModal = new bootstrap.Modal(document.getElementById('addAppModal'));
+    addAppModal.show();
+});
 
 function createCard(app) {
     let colDiv = document.createElement('div');
@@ -96,7 +102,15 @@ function createCard(app) {
     return colDiv;
 }
 
-fetchApps()
+fetchApps();
+const interval = setInterval(function() {
+    let query = searchInput.value;
+    if (query) {
+        filterApps(query);
+    } else {
+        fetchApps();
+    }
+  }, 5000);
 
 
 searchInput.addEventListener('input', function() {
@@ -117,7 +131,7 @@ function fetchApps() {
         })
         .catch(error => {
             console.error('Error:', error);
-            showToast('Error fetching the list.');
+            showToast('Error fetching the list.', 'error');
         });
 }
 
@@ -141,11 +155,29 @@ function filterApps(query) {
         })
         .catch(error => {
             console.error('Error:', error);
+            showToast('Error fetching the list.', 'error');
         });
 }
 
-function showToast(message) {
-    const toast = new bootstrap.Toast(document.getElementById('error-toast'));
-    // document.querySelector('#error-toast .toast-body').textContent = message;
+function showToast(message, type) {
+    const toastElement = document.getElementById('dynamic-toast');
+    const toastTitle = document.getElementById('toast-title');
+    const toastBody = document.getElementById('toast-body');
+    const toastHeader = toastElement.querySelector('.toast-header');
+
+    toastHeader.classList.remove('custom-header-success', 'custom-header-error');
+
+    if (type === 'success') {
+        toastTitle.textContent = 'Success';
+        toastHeader.classList.add('custom-header-success');
+    } else if (type === 'error') {
+        toastTitle.textContent = 'Error';
+        toastHeader.classList.add('custom-header-error');
+    }
+
+    toastBody.textContent = message;
+
+    const toast = new bootstrap.Toast(toastElement);
     toast.show();
 }
+
