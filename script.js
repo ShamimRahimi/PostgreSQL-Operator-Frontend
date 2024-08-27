@@ -3,12 +3,12 @@ let searchInput = document.getElementById("search");
 
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000/api/v1', 
+    baseURL: 'http://shamim.umrc.ir/api/v1', 
 });
 
 axiosInstance.interceptors.request.use(
     function (config) {
-        const token = '4a956a0b-5420-4d02-8a25-fcb0284db220';
+        const token = '5aa0670a-e510-4da2-beb0-5f89415ff811';
         config.headers.Authorization = `${token}`;
         return config;
     }
@@ -32,14 +32,38 @@ function handleDelete(appId) {
     }
 }
 
-function handleResize(appId) {
-
+function handleResize(appId, appPrevSize) {
+    const resizeModal = new bootstrap.Modal(document.getElementById('resizeModal'));
+    resizeModal.show();
+    document.getElementById('resizeAppButton').addEventListener('click', function () {
+        const appSize = parseInt(document.getElementById('newSize').value, 10);
+        if (appSize) {
+            if (appSize <= appPrevSize) {
+                showToast('App size can not be less than previous value.', 'error');
+                resizeModal.hide();
+            }
+            else {
+                axiosInstance.put(`/app/${appId}/`, { size: appSize })
+                    .then(response => {
+                        showToast('App resized successfully.', 'success');
+                        resizeModal.hide();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showToast('Failed to create app.', 'error');
+                    });
+            }
+        } else {
+            showToast('Please fill in all fields.', 'error');
+        }
+    });
 }
 
 document.getElementById('addAppButton').addEventListener('click', function () {
     const addAppModal = new bootstrap.Modal(document.getElementById('addAppModal'));
     addAppModal.show();
 });
+
 
 document.getElementById('saveAppButton').addEventListener('click', function () {
     const appName = document.getElementById('appName').value;
@@ -65,7 +89,6 @@ document.getElementById('saveAppButton').addEventListener('click', function () {
         showToast('Please fill in all fields.', 'error');
     }
 });
-
 
 function createCard(app) {
     let colDiv = document.createElement('div');
@@ -119,8 +142,9 @@ function createCard(app) {
     resizeButton.classList.add('btn', 'btn-secondary');
     resizeButton.textContent = 'Resize';
     resizeButton.addEventListener('click', function() {
-        handleResize(app.id);
+        handleResize(app.id, app.size);
     });
+    
 
     userActionsDiv.appendChild(deleteButton);
     userActionsDiv.appendChild(resizeButton);
