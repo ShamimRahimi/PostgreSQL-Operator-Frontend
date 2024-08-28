@@ -8,12 +8,22 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     function (config) {
-        const token = '5aa0670a-e510-4da2-beb0-5f89415ff811';
+        const token = '83151fd5-54b3-4785-aef2-aa34fff720c0';
         config.headers.Authorization = `${token}`;
         return config;
     }
 );
 
+fetchApps();
+const interval = setInterval(function() {
+    let query = searchInput.value;
+    if (query) {
+        filterApps(query);
+    } else {
+        fetchApps();
+    }
+  }, 5000);
+  
 function handleDelete(appId) {
     if (confirm('Are you sure you want to delete this item?')) {
         axiosInstance.delete(`/app/${appId}/`)
@@ -115,7 +125,7 @@ function createCard(app) {
 
     let appSizeP = document.createElement('p');
     appSizeP.classList.add('app-size');
-    appSizeP.textContent = 'app size: ' + app.size;
+    appSizeP.textContent = 'app size: ' + app.size + ' GB';
 
     let appStatusP = document.createElement('p');
     appStatusP.classList.add('app-size');
@@ -157,15 +167,6 @@ function createCard(app) {
     return colDiv;
 }
 
-fetchApps();
-const interval = setInterval(function() {
-    let query = searchInput.value;
-    if (query) {
-        filterApps(query);
-    } else {
-        fetchApps();
-    }
-  }, 5000);
 
 
 searchInput.addEventListener('input', function() {
