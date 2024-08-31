@@ -30,15 +30,15 @@ const UsersList = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-        <Title style={{ textAlign: 'center', marginTop: '60px' }}>
+        <Title style={{ textAlign: 'center', marginTop: '10px' }}>
           Users List
         </Title>
 
-      <List
+      <List style={{ width: "100%" }}
         grid={{ gutter: 16, xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 4}}
         dataSource={users}
         renderItem={item => (
-            <Card style={{ width: '330px' }} title={item.name} 
+            <Card title={item.name} 
             actions={[<Button danger onClick={() => handleDelete(item.id, item.name)}> Delete </Button>,]}
             >
                 <p><b>Email:</b> {item.email}</p>
