@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from 'react-router-dom';
-import { List, Button, Input, notification, Card } from "antd";
+import { List, Button, Input, notification, Card, Spin } from "antd";
 
 const { Search } = Input;
 
@@ -11,10 +11,12 @@ const DatabasesList = () => {
   const [filteredDatabases, setFilteredDatabases] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchDatabases = async () => {
+      setLoading(true);
       try {
         const response = await axios.get('http://shamim.umrc.ir/api/v1/apps/', {
           headers: {
@@ -26,6 +28,8 @@ const DatabasesList = () => {
       } catch (error) {
         setError('Error fetching databases');
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -84,28 +88,34 @@ const DatabasesList = () => {
         onChange={(e) => setSearchTerm(e.target.value)}
         style={{ marginBottom: "20px" }}
       />
-      <List
-        itemLayout="horizontal"
-        dataSource={filteredDatabases}
-        renderItem={db => (
-          <List.Item
-            actions={[
-              <Button type="link" onClick={() => handleDelete(db.id)}>Delete</Button>,
-              <Button type="link" onClick={() => {
-                const newSize = prompt('Enter new size:', db.size);
-                if (newSize && !isNaN(newSize)) {
-                  handleResize(db.id, parseInt(newSize, 10));
-                }
-              }}>Resize</Button>,
-            ]}
-          >
-            <List.Item.Meta
-              title={<Link to={`/details/${db.id}`} style={{ fontSize: '18px', fontWeight: '500' }}>{db.name}</Link>}
-              description={`Status: ${db.state} | Size: ${db.size} GB`}
-            />
-          </List.Item>
-        )}
-      />
+      {loading ? (
+        <div style={{ textAlign: "center", margin: "20px" }}>
+          <Spin size="large" />
+        </div>
+      ) : (
+        <List
+          itemLayout="horizontal"
+          dataSource={filteredDatabases}
+          renderItem={db => (
+            <List.Item
+              actions={[
+                <Button type="link" onClick={() => handleDelete(db.id)}>Delete</Button>,
+                <Button type="link" onClick={() => {
+                  const newSize = prompt('Enter new size:', db.size);
+                  if (newSize && !isNaN(newSize)) {
+                    handleResize(db.id, parseInt(newSize, 10));
+                  }
+                }}>Resize</Button>,
+              ]}
+            >
+              <List.Item.Meta
+                title={<Link to={`/details/${db.id}`} style={{ fontSize: '18px', fontWeight: '500' }}>{db.name}</Link>}
+                description={`Status: ${db.state} | Size: ${db.size} GB`}
+              />
+            </List.Item>
+          )}
+        />
+      )}
     </Card>
   );
 };
