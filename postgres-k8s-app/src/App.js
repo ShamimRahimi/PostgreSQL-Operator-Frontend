@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
 import Login from "./pages/Login";
 import DatabasesList from "./pages/DatabasesList";
+import Signup from './components/Signup';
 import CreateDatabase from "./components/CreateDatabase";
 import AppDetails from "./pages/AppDetails";
 import NavBar from "./components/NavBar";
@@ -22,9 +23,10 @@ const Content = () => {
 
   return (
     <>
-      {location.pathname !== "/" && <NavBar />}
+      {location.pathname !== "/" && location.pathname !== "/signup" && <NavBar />}
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
         <Route path="/databases" element={<DatabasesList />} />
         <Route path="/create" element={<CreateDatabase />} />
         <Route path="/details/:id" element={<AppDetails />} />

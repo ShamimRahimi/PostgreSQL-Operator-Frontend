@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Import Link for navigation
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { Form, Input, Button, Typography, message } from "antd";
@@ -72,6 +72,12 @@ const Login = () => {
           <Button type="primary" htmlType="submit" block>
             Login
           </Button>
+        </Form.Item>
+
+        <Form.Item>
+          <p style={{ textAlign: 'center' }}>
+            Don’t have an account? <Link to="/signup">Sign Up</Link>
+          </p>
         </Form.Item>
       </Form>
     </div>

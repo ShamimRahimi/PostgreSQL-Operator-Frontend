@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from 'react-router-dom';
@@ -13,27 +13,33 @@ const DatabasesList = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const { token } = useContext(AuthContext);
+  const intervalRef = useRef(null);
+
+  const fetchDatabases = async () => {
+    try {
+      const response = await axios.get('http://shamim.umrc.ir/api/v1/apps/', {
+        headers: {
+          Authorization: `${token}`,
+        },
+      });
+      setDatabases(response.data.results);
+      setFilteredDatabases(response.data.results);
+    } catch (error) {
+      setError('Error fetching databases');
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchDatabases = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get('http://shamim.umrc.ir/api/v1/apps/', {
-          headers: {
-            Authorization: `${token}`,
-          },
-        });
-        setDatabases(response.data.results);
-        setFilteredDatabases(response.data.results);
-      } catch (error) {
-        setError('Error fetching databases');
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDatabases();
+
+    intervalRef.current = setInterval(() => {
+      fetchDatabases();
+    }, 5000);
+
+    return () => clearInterval(intervalRef.current);
   }, [token]);
 
   useEffect(() => {
@@ -66,6 +72,7 @@ const DatabasesList = () => {
           Authorization: `${token}`,
         },
       });
+      // Update the list after resizing
       const response = await axios.get('http://shamim.umrc.ir/api/v1/apps/', {
         headers: {
           Authorization: `${token}`,
