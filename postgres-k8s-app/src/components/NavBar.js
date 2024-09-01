@@ -1,7 +1,9 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { Menu, Button } from "antd";
+import { Menu, Button, Dropdown } from "antd";
+import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import './NavBar.css'; 
 
 const NavBar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -12,31 +14,52 @@ const NavBar = () => {
     navigate("/");
   };
 
+  const userMenu = (
+    <Menu>
+      <Menu.Item key="user-info" disabled>
+        <span>{user.name}</span>
+      </Menu.Item>
+      <Menu.Item key="logout">
+        <Button
+          type="primary"
+          icon={<LogoutOutlined />}
+          onClick={handleLogout}
+          style={{ width: '100%' }}
+        >
+          Logout
+        </Button>
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
-    <Menu mode="horizontal" theme="dark">
-      <Menu.Item key="databases">
-        <Link to="/databases">Databases</Link>
-      </Menu.Item>
-      <Menu.Item key="create">
-        <Link to="/create">Create Database</Link>
-      </Menu.Item>
+    <div className="navbar-container">
+      <Menu mode="horizontal" theme="dark" style={{ flex: 1 }}>
+        <Menu.Item key="databases">
+          <Link to="/databases">Databases</Link>
+        </Menu.Item>
+        <Menu.Item key="create">
+          <Link to="/create">Create Database</Link>
+        </Menu.Item>
+      </Menu>
       {user ? (
-        <>
-          <Menu.Item key="user" style={{ float: "right" }}>
-            Logged in as: {user.name}
-          </Menu.Item>
-          <Menu.Item key="logout" style={{ float: "right" }}>
-            <Button type="primary" onClick={handleLogout}>
-              Logout
-            </Button>
-          </Menu.Item>
-        </>
+        <Dropdown overlay={userMenu} trigger={['click']}>
+          <Button
+            icon={<UserOutlined />}
+            style={{
+              color: 'white',
+              backgroundColor: '#001529',
+              border: 'none',
+              marginLeft: 'auto'
+            }}
+          />
+        </Dropdown>
       ) : (
         <Menu.Item key="login" style={{ float: "right" }}>
-          <Link to="/">Login</Link>
+          <Link to="/" style={{ color: 'white' }}>Login</Link>
         </Menu.Item>
       )}
-    </Menu>
+    </div>
   );
 };
 

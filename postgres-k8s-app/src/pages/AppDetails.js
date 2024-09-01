@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
-import { Card, Typography, Spin, Alert, Row, Col, Divider } from "antd";
-
-const { Title, Text } = Typography;
+import { Button, Card, Spin, Alert } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import './AppDetails.css'; // Ensure this is correctly linked
 
 const AppDetails = () => {
   const { id } = useParams();
@@ -12,6 +12,7 @@ const AppDetails = () => {
   const [appDetails, setAppDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAppDetails = async () => {
@@ -33,38 +34,35 @@ const AppDetails = () => {
     fetchAppDetails();
   }, [id, token]);
 
-  if (loading) return <Spin tip="Loading..." size="large" style={{ display: 'block', margin: '20% auto' }} />;
-  if (error) return <Alert message="Error" description={error} type="error" showIcon style={{ maxWidth: 600, margin: '20px auto' }} />;
+  const handleBack = () => {
+    navigate("/databases");
+  };
+
+  if (loading) return <div className="app-details-spinner"><Spin size="large" /></div>;
+  if (error) return <Alert message={error} type="error" />;
 
   return (
-    <Card style={{ maxWidth: 800, margin: "40px auto", padding: "30px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" }}>
-      <Title level={2} style={{ textAlign: "center", marginBottom: "20px" }}>
-        App Details: {appDetails.name}
-      </Title>
-      <Divider />
-      <Row gutter={[16, 24]}>
-        <Col span={12}>
-          <Text strong>Status:</Text>
-          <Text style={{ display: "block", marginTop: "5px" }}>{appDetails.state}</Text>
-        </Col>
-        <Col span={12}>
-          <Text strong>Creation Time:</Text>
-          <Text style={{ display: "block", marginTop: "5px" }}>{new Date(appDetails.creation_time).toLocaleString()}</Text>
-        </Col>
-        <Col span={12}>
-          <Text strong>Size:</Text>
-          <Text style={{ display: "block", marginTop: "5px" }}>{appDetails.size}</Text>
-        </Col>
-        <Col span={12}>
-          <Text strong>Pod Name:</Text>
-          <Text style={{ display: "block", marginTop: "5px" }}>{appDetails.pod_name}</Text>
-        </Col>
-        <Col span={12}>
-          <Text strong>User:</Text>
-          <Text style={{ display: "block", marginTop: "5px" }}>{appDetails.user}</Text>
-        </Col>
-      </Row>
-    </Card>
+    <div className="app-details-container">
+      <Button
+        type="link"
+        icon={<ArrowLeftOutlined />}
+        onClick={handleBack}
+        style={{ marginBottom: '20px' }}
+      >
+        Back to List
+      </Button>
+      <Card
+        title={`Details for ${appDetails.name}`}
+        bordered={false}
+        style={{ width: '100%', maxWidth: '800px', margin: 'auto' }}
+      >
+        <p><strong>Status:</strong> {appDetails.state}</p>
+        <p><strong>Creation Time:</strong> {new Date(appDetails.creation_time).toLocaleString()}</p>
+        <p><strong>Size:</strong> {appDetails.size} GB</p>
+        <p><strong>Pod Name:</strong> {appDetails.pod_name}</p>
+        <p><strong>User:</strong> {appDetails.user}</p>
+      </Card>
+    </div>
   );
 };
 

@@ -1,0 +1,21 @@
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #001529; /* Dark theme color */
+    padding: 0 20px;
+    height: 64px; /* Height of the navbar */
+  }
+  
+  .navbar-container .ant-menu {
+    flex: 1;
+    background: transparent;
+    border: none;
+  }
+  
+  .navbar-container .ant-btn {
+    color: white;
+    background-color: transparent;
+    border: none;
+  }
+  
