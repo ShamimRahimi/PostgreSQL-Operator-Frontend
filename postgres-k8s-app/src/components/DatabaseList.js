@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
-import { Link } from 'react-router-dom';
-import { List, Button, Input, notification, Card, Spin } from "antd";
+import { Link, useNavigate } from 'react-router-dom';
+import { List, Button, Input, Card, Spin, message } from "antd";
 
 const { Search } = Input;
 
@@ -12,8 +12,9 @@ const DatabasesList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { token } = useContext(AuthContext);
+  const { token, logout } = useContext(AuthContext);
   const intervalRef = useRef(null);
+  const navigate = useNavigate();
 
   const fetchDatabases = async () => {
     try {
@@ -25,8 +26,14 @@ const DatabasesList = () => {
       setDatabases(response.data.results);
       setFilteredDatabases(response.data.results);
     } catch (error) {
-      setError('Error fetching databases');
-      console.error(error);
+      if (error.response && error.response.status === 401) {
+        message.error('Session expired. Redirecting to login.');
+        logout();
+        navigate('/login');
+      } else {
+        setError('Error fetching databases');
+        console.error(error);
+      }
     } finally {
       setLoading(false);
     }
@@ -40,7 +47,7 @@ const DatabasesList = () => {
     }, 5000);
 
     return () => clearInterval(intervalRef.current);
-  }, [token]);
+  }, [token, navigate]);
 
   useEffect(() => {
     const results = databases.filter(db =>
@@ -60,7 +67,13 @@ const DatabasesList = () => {
         setDatabases(databases.filter(db => db.id !== id));
         setFilteredDatabases(filteredDatabases.filter(db => db.id !== id));
       } catch (error) {
-        console.error('Error deleting database:', error);
+        if (error.response && error.response.status === 401) {
+          message.error('Session expired. Redirecting to login.');
+          logout();
+          navigate('/login');
+        } else {
+          console.error('Error deleting database:', error);
+        }
       }
     }
   };
@@ -72,7 +85,6 @@ const DatabasesList = () => {
           Authorization: `${token}`,
         },
       });
-      // Update the list after resizing
       const response = await axios.get('http://shamim.umrc.ir/api/v1/apps/', {
         headers: {
           Authorization: `${token}`,
@@ -81,7 +93,13 @@ const DatabasesList = () => {
       setDatabases(response.data.results);
       setFilteredDatabases(response.data.results);
     } catch (error) {
-      console.error('Error resizing database:', error);
+      if (error.response && error.response.status === 401) {
+        message.error('Session expired. Redirecting to login.');
+        logout(); 
+        navigate('/login');
+      } else {
+        console.error('Error resizing database:', error);
+      }
     }
   };
 
