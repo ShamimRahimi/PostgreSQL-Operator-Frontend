@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from 'react-router-dom';
-import { List, Button, Input, Card, Spin, message } from "antd";
+import { List, Button, Input, Card, Spin, message, Badge, Modal, Form } from "antd";
+import { LoadingOutlined, CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 
@@ -12,6 +13,11 @@ const DatabasesList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [resizeId, setResizeId] = useState(null);
+  const [resizeCurrentSize, setResizeCurrentSize] = useState(0);
+  const [newSize, setNewSize] = useState("");
+  const [resizeError, setResizeError] = useState("");
   const { token, logout } = useContext(AuthContext);
   const intervalRef = useRef(null);
   const navigate = useNavigate();
@@ -27,7 +33,6 @@ const DatabasesList = () => {
       setFilteredDatabases(response.data.results);
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        message.error('Session expired. Redirecting to login.');
         logout();
         navigate('/login');
       } else {
@@ -47,7 +52,7 @@ const DatabasesList = () => {
     }, 5000);
 
     return () => clearInterval(intervalRef.current);
-  }, [token, navigate]);
+  }, [token]);
 
   useEffect(() => {
     const results = databases.filter(db =>
@@ -67,39 +72,65 @@ const DatabasesList = () => {
         setDatabases(databases.filter(db => db.id !== id));
         setFilteredDatabases(filteredDatabases.filter(db => db.id !== id));
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          message.error('Session expired. Redirecting to login.');
-          logout();
-          navigate('/login');
-        } else {
-          console.error('Error deleting database:', error);
-        }
+        console.error('Error deleting database:', error);
       }
     }
   };
 
-  const handleResize = async (id, newSize) => {
+  const showResizeModal = (id, currentSize) => {
+    setResizeId(id);
+    setResizeCurrentSize(currentSize);
+    setIsModalVisible(true);
+  };
+
+  const handleResize = async () => {
+    const parsedNewSize = parseInt(newSize, 10);
+
+    if (isNaN(parsedNewSize)) {
+      setResizeError('Invalid size entered. Please enter a number.');
+      return;
+    }
+
+    if (parsedNewSize < 1) {
+      setResizeError('Size must be at least 1 GB.');
+      return;
+    }
+
+    if (parsedNewSize <= resizeCurrentSize) {
+      setResizeError('New size cannot be smaller than or equal to the current size.');
+      return;
+    }
+
     try {
-      await axios.put(`http://shamim.umrc.ir/api/v1/app/${id}/`, { size: newSize }, {
+      await axios.put(`http://shamim.umrc.ir/api/v1/app/${resizeId}/`, { size: parsedNewSize }, {
         headers: {
           Authorization: `${token}`,
         },
       });
-      const response = await axios.get('http://shamim.umrc.ir/api/v1/apps/', {
-        headers: {
-          Authorization: `${token}`,
-        },
-      });
-      setDatabases(response.data.results);
-      setFilteredDatabases(response.data.results);
+      fetchDatabases();
+      message.success(`Database resized to ${parsedNewSize} GB successfully.`);
+      setIsModalVisible(false);
+      setNewSize("");
+      setResizeError("");
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        message.error('Session expired. Redirecting to login.');
-        logout(); 
-        navigate('/login');
-      } else {
-        console.error('Error resizing database:', error);
-      }
+      console.error('Error resizing database:', error);
+      message.error('Error resizing database. Please try again.');
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setNewSize("");
+    setResizeError("");
+  };
+
+  const getStatusBadge = (state) => {
+    if (state === 'Running') {
+      return <Badge status="success" text="Running" icon={<CheckCircleOutlined />} />;
+    } else if (state === 'Pending') {
+      return <Badge status="processing" text="Pending" icon={<LoadingOutlined />} />;
+    } else {
+      return <Badge status="warning" text="Unknown" icon={<ExclamationCircleOutlined />} />;
     }
   };
 
@@ -124,23 +155,43 @@ const DatabasesList = () => {
           renderItem={db => (
             <List.Item
               actions={[
-                <Button type="link" onClick={() => handleDelete(db.id)}>Delete</Button>,
-                <Button type="link" onClick={() => {
-                  const newSize = prompt('Enter new size:', db.size);
-                  if (newSize && !isNaN(newSize)) {
-                    handleResize(db.id, parseInt(newSize, 10));
-                  }
-                }}>Resize</Button>,
+                <Button danger type="link" onClick={() => handleDelete(db.id)}>Delete</Button>,
+                <Button type="link" onClick={() => showResizeModal(db.id, db.size)}>Resize</Button>,
               ]}
             >
               <List.Item.Meta
                 title={<Link to={`/details/${db.id}`} style={{ fontSize: '18px', fontWeight: '500' }}>{db.name}</Link>}
-                description={`Status: ${db.state} | Size: ${db.size} GB`}
+                description={
+                  <>
+                    {getStatusBadge(db.state)} | Size: {db.size} GB
+                  </>
+                }
               />
             </List.Item>
           )}
         />
       )}
+
+      <Modal
+        title="Resize Database"
+        visible={isModalVisible}
+        onOk={handleResize}
+        onCancel={handleCancel}
+        okText="Resize"
+      >
+        <Form layout="vertical">
+          <Form.Item label={`Current Size: ${resizeCurrentSize} GB`}>
+            <Input
+              type="number"
+              value={newSize}
+              onChange={(e) => setNewSize(e.target.value)}
+              min={resizeCurrentSize}
+              placeholder={`Enter a size greater than ${resizeCurrentSize} GB`}
+            />
+          </Form.Item>
+          {resizeError && <p style={{ color: 'red' }}>{resizeError}</p>}
+        </Form>
+      </Modal>
     </Card>
   );
 };

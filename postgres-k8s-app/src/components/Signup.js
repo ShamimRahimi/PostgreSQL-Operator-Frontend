@@ -59,7 +59,7 @@ const Signup = () => {
         </Form.Item>
         <Form.Item>
           <p style={{ textAlign: 'center' }}>
-            Already have an account? <Link to="/login">Login</Link>
+            Already have an account? <Link to="/">Login</Link>
           </p>
         </Form.Item>
       </Form>

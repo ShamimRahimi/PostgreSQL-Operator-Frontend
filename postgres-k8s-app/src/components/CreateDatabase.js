@@ -73,7 +73,7 @@ const CreateDatabase = () => {
           label="Size (in GB)"
           rules={[{ required: true, message: "Please input the database size!" }]}
         >
-          <Input type="number" placeholder="Enter size" />
+          <Input type="number" min={1} max={10} placeholder="Enter size" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" block>
