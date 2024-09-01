@@ -1,8 +1,10 @@
 import React, { useContext } from "react";
-import { Form, Input, Button, notification } from "antd";
+import { Form, Input, Button, notification, Card, Typography } from "antd";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+
+const { Title } = Typography;
 
 const CreateDatabase = () => {
   const { token } = useContext(AuthContext);
@@ -46,8 +48,10 @@ const CreateDatabase = () => {
   };
 
   return (
-    <div>
-      <h2>Create Database</h2>
+    <Card style={{ maxWidth: 600, margin: "40px auto", padding: "30px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" }}>
+      <Title level={2} style={{ textAlign: "center", marginBottom: "20px" }}>
+        Create Database
+      </Title>
       <Form
         name="create-database"
         onFinish={onFinish}
@@ -62,28 +66,22 @@ const CreateDatabase = () => {
           label="Database Name"
           rules={[{ required: true, message: "Please input the database name!" }]}
         >
-          <Input placeholder="Database Name" />
+          <Input placeholder="Enter database name" />
         </Form.Item>
         <Form.Item
           name="size"
-          label="Size"
-          rules={[
-            {
-              required: true,
-            //   type: 'number',
-            //   min: 1
-            },
-          ]}
+          label="Size (in GB)"
+          rules={[{ required: true, message: "Please input the database size!" }]}
         >
-          <Input type="number" placeholder="Size" />
+          <Input type="number" placeholder="Enter size" />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" block>
             Create Database
           </Button>
         </Form.Item>
       </Form>
-    </div>
+    </Card>
   );
 };
 

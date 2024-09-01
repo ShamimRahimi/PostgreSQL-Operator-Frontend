@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import { Link } from 'react-router-dom';
+import { List, Button, Input, notification, Card } from "antd";
+
+const { Search } = Input;
 
 const DatabasesList = () => {
   const [databases, setDatabases] = useState([]);
@@ -71,31 +75,38 @@ const DatabasesList = () => {
   };
 
   return (
-    <div>
-      <h2>Databases List</h2>
-      {error && <p>{error}</p>}
-      <input
-        type="text"
+    <Card style={{ maxWidth: 800, margin: "40px auto", padding: "20px", borderRadius: "10px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" }}>
+      <h2 style={{ textAlign: "center" }}>Databases List</h2>
+      {error && <p style={{ color: 'red', textAlign: 'center' }}>{error}</p>}
+      <Search
         placeholder="Search by name"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: "20px", padding: "10px" }}
+        style={{ marginBottom: "20px" }}
       />
-      <ul>
-        {filteredDatabases.map(db => (
-          <li key={db.id}>
-            <span>{db.name} - {db.state} - Size: {db.size}</span>
-            <button onClick={() => handleDelete(db.id)}>Delete</button>
-            <button onClick={() => {
-              const newSize = prompt('Enter new size:', db.size);
-              if (newSize && !isNaN(newSize)) {
-                handleResize(db.id, parseInt(newSize, 10));
-              }
-            }}>Resize</button>
-          </li>
-        ))}
-      </ul>
-    </div>
+      <List
+        itemLayout="horizontal"
+        dataSource={filteredDatabases}
+        renderItem={db => (
+          <List.Item
+            actions={[
+              <Button type="link" onClick={() => handleDelete(db.id)}>Delete</Button>,
+              <Button type="link" onClick={() => {
+                const newSize = prompt('Enter new size:', db.size);
+                if (newSize && !isNaN(newSize)) {
+                  handleResize(db.id, parseInt(newSize, 10));
+                }
+              }}>Resize</Button>,
+            ]}
+          >
+            <List.Item.Meta
+              title={<Link to={`/details/${db.id}`} style={{ fontSize: '18px', fontWeight: '500' }}>{db.name}</Link>}
+              description={`Status: ${db.state} | Size: ${db.size} GB`}
+            />
+          </List.Item>
+        )}
+      />
+    </Card>
   );
 };
 
