@@ -15,11 +15,6 @@ This project provides a **frontend interface** for managing PostgreSQL instances
 - [Running the App](#running-the-app)
   - [Development Mode](#development-mode)
   - [Production Build](#production-build)
-- [Kubernetes Deployment](#kubernetes-deployment)
-  - [Create Docker Images](#create-docker-images)
-  - [Deploy to Kubernetes](#deploy-to-kubernetes)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Overview
 
