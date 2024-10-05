@@ -1,6 +1,6 @@
 # PostgreSQL Operator Frontend
 
-This project provides a frontend interface for managing PostgreSQL instances deployed via a Kubernetes Operator. The frontend interacts with a backend API, allowing users to create, modify, and monitor PostgreSQL instances within the cluster.
+This project provides a frontend interface for managing PostgreSQL instances deployed via a Kubernetes Operator. The frontend interacts with a backend API, allowing users to create, and modify PostgreSQL instances within the cluster.
 
 ## Table of Contents
 
