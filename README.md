@@ -11,7 +11,6 @@ This project provides a frontend interface for managing PostgreSQL instances dep
   - [Prerequisites](#prerequisites)
   - [Clone the Repository](#clone-the-repository)
   - [Install Dependencies](#install-dependencies)
-  - [Environment Variables](#environment-variables)
   - [Running the App](#running-the-app)
     - [Development Mode](#development-mode)
 
@@ -61,15 +60,6 @@ Install the necessary dependencies using npm or yarn:
 npm install
 # or
 yarn install
-```
-### Environment Variables
-
-Create a `.env` file in the root directory and set the environment variables required for the application to run.
-
-Example:
-
-```env
-REACT_APP_BACKEND_URL=http://your-backend-url.com/api/v1
 ```
 ### Running the App
 
