@@ -14,11 +14,6 @@ This project provides a frontend interface for managing PostgreSQL instances dep
   - [Environment Variables](#environment-variables)
   - [Running the App](#running-the-app)
     - [Development Mode](#development-mode)
-    - [Production Build](#production-build)
-  - [Kubernetes Deployment](#kubernetes-deployment)
-    - [Create Docker Images](#create-docker-images)
-- [Contributing](#contributing)
-- [License](#license)
 
 ## Overview
 
@@ -34,7 +29,6 @@ This project is part of a Kubernetes-based infrastructure where PostgreSQL datab
 - **API Communication**: Axios
 - **Routing**: React Router
 - **Kubernetes**: For deploying the application
-- **Traefik**: Ingress controller for routing traffic within the cluster
 
 ## Features
 
@@ -57,6 +51,7 @@ Before running this project, ensure you have the following installed:
 ```bash
 git clone https://github.com/ShamimRahimi/PostgreSQL-Operator-Frontend.git
 cd PostgreSQL-Operator-Frontend
+cd postgres-k8s-app
 ```
 ### Install Dependencies
 
@@ -88,13 +83,3 @@ npm start
 yarn start
 ```
 This will start the app at `http://localhost:3000`. The page will reload automatically if you make edits.
-
-#### Production Build
-
-To build the app for production:
-
-```bash
-npm run build
-# or
-yarn build
-```
