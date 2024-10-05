@@ -12,7 +12,6 @@ This project provides a frontend interface for managing PostgreSQL instances dep
   - [Clone the Repository](#clone-the-repository)
   - [Install Dependencies](#install-dependencies)
   - [Running the App](#running-the-app)
-    - [Development Mode](#development-mode)
 
 ## Overview
 
@@ -62,8 +61,6 @@ npm install
 yarn install
 ```
 ### Running the App
-
-#### Development Mode
 
 To run the app in development mode:
 
